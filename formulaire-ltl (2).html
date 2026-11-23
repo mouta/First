@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALLEGION SHIPPING LTL</title>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<style>
+:root{
+  --bg:#eef1f5; --panel:#fff; --ink:#0f1b2d; --muted:#61708a; --line:#d3dae5; --chip:#f4f6fa;
+  --brand:#0f1b2d; --brand-ink:#fff; --accent:#ff9f1a; --accent-ink:#1a1204; --bad:#c62828; --ok:#1b7a43;
+  --shadow:0 1px 2px rgba(15,27,45,.06),0 8px 24px rgba(15,27,45,.08);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b121e; --panel:#152033; --ink:#e9eff9; --muted:#97a6bf; --line:#2a3a56; --chip:#1b2940;
+  --brand:#050a12; --bad:#ff8a80; --ok:#6fd49a; --shadow:0 8px 24px rgba(0,0,0,.4);}}
+:root[data-theme="dark"]{--bg:#0b121e;--panel:#152033;--ink:#e9eff9;--muted:#97a6bf;--line:#2a3a56;--chip:#1b2940;--brand:#050a12;--bad:#ff8a80;--ok:#6fd49a;--shadow:0 8px 24px rgba(0,0,0,.4)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+#ctnsbox{margin-top:18px}
+#ctnsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+@media print{#ctnsbox{display:none !important}}
+.share{font-size:.82rem;font-weight:600;color:var(--muted);margin:0 0 8px}
+.share.on{color:var(--ok)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Inter","Segoe UI",system-ui,-apple-system,sans-serif}
+header{background:var(--brand);color:var(--brand-ink);padding:22px 16px;border-bottom:4px solid var(--accent)}
+header div{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.hl{height:68px;width:auto;background:#fff;border-radius:10px;padding:6px}
+hgroup{margin:0}
+h1{margin:0;font-size:1.45rem;letter-spacing:-.01em}
+header p{margin:2px 0 0;color:#b9c4d8;font-size:.92rem}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+form,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px}
+form{display:grid;gap:18px 20px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:820px){form{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){form{grid-template-columns:1fr}}
+.actions,.toast{grid-column:1/-1}
+.chk{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;background:var(--chip);border-radius:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:1.05rem;font-weight:600;color:var(--ink);margin:0}
+.chk input{width:22px;height:22px;padding:0;flex:none;accent-color:var(--accent)}
+#home{text-align:center;padding:40px 22px;margin-top:8px}
+#home h2{margin:0 0 6px;font-size:1.4rem}
+.homebtns{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.homebtns:only-child{grid-template-columns:1fr}
+@media (max-width:620px){.homebtns{grid-template-columns:1fr}}
+button.big{height:auto;min-height:100px;flex-direction:column;justify-content:center;gap:4px;font-size:1.25rem;padding:16px;text-align:center}
+button.big small{font-weight:500;opacity:.8;font-size:.85rem}
+.shiftbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--chip);border-radius:10px;padding:8px 14px;margin-bottom:16px;font-weight:600}
+.shiftbar button{height:34px;font-size:.85rem}
+.warn{background:rgba(255,159,26,.16);color:var(--ink);border:1.5px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:.92rem;font-weight:600;margin:0 0 16px;text-align:left}
+td.yes{background:#d0d4da;font-weight:700;color:#111}
+button.edit{height:30px;padding:0 12px;font-size:.8rem}
+.row{display:contents}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+label{display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.hint{text-transform:none;letter-spacing:0;font-weight:500}
+input,select{width:100%;height:48px;padding:0 14px;font:inherit;font-size:1.05rem;font-weight:600;color:var(--ink);background:var(--chip);border:2px solid transparent;border-radius:10px;transition:border-color .15s,background .15s}
+input:hover,select:hover{border-color:var(--line)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,159,26,.25)}
+.field.invalid input,.field.invalid select{border-color:var(--bad)}
+.err{color:var(--bad);font-size:.82rem;min-height:1.1em;margin-top:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+button,.btn{height:46px;padding:0 20px;font:inherit;font-weight:700;border-radius:10px;cursor:pointer;border:2px solid var(--line);background:var(--panel);color:var(--ink);display:inline-flex;align-items:center}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1;justify-content:center;font-size:1.05rem}
+button:hover{filter:brightness(.97)}
+.toast{color:var(--ok);font-weight:600;min-height:1.4em}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+.bar span{color:var(--muted);font-size:.9rem}
+#sheets{display:grid;gap:16px;margin-top:12px}
+.sheet{background:#fff;color:#000;border:3px solid #000;border-radius:10px;overflow:hidden;text-align:center}
+.sheet .logo{background:#fff;padding:10px;display:flex;justify-content:center;border-bottom:3px solid #000}
+.sheet .logo img{height:90px;width:auto}
+.sheet .head{background:#000;color:#fff;padding:14px 10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet .head small{display:block;font-size:.95rem;letter-spacing:.3em;text-transform:uppercase;opacity:.8}
+.sheet .head b{font-size:3.6rem;line-height:1.05}
+.sheet .body{padding:22px 14px;display:grid;gap:14px}
+.ln{margin:0;line-height:1.15;overflow-wrap:anywhere}
+.ln .k{font-weight:600;color:#333}
+.ln .v{font-weight:800}
+.ln.l1{font-size:2.3rem}.ln.l2{font-size:1.8rem}.ln.l3{font-size:1.1rem;color:#444}
+.ln.adr{font-size:1.5rem;color:#000}
+.duo{display:flex;justify-content:center;gap:1.6rem;flex-wrap:wrap}
+.mull{flex:none;border:4px solid #000;margin:0 14px 14px;padding:8px 0;font-size:1.8rem;font-weight:900;letter-spacing:.18em}
+.log{margin-top:26px}
+.log h2{font-size:1.05rem;margin:0}
+.loghead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools button,.tools label.btn{height:38px;padding:0 14px;font-size:.88rem;margin:0;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:700}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;white-space:nowrap}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--chip);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.empty{padding:16px;color:var(--muted);font-size:.9rem}
+.note{color:var(--muted);font-size:.8rem;margin:8px 2px 0}
+@page{size:letter;margin:10mm}
+@media print{
+  body{background:#fff}
+  header,form,.log,.bar,.shiftbar,.warn,#home{display:none !important}
+  main{max-width:none;padding:0}
+  #sheets{display:block;margin:0}
+  .sheet{border-radius:0;height:255mm;break-after:page;page-break-after:always;display:flex;flex-direction:column}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  .sheet .logo{padding:6mm}.sheet .logo img{height:36mm}
+  .sheet .head{padding:5mm}
+  .sheet .head small{font-size:1.2rem}
+  .sheet .head b{font-size:5.5rem}
+  .sheet .body{flex:1;display:flex;flex-direction:column;padding:0;gap:0}
+  .ln{flex:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;column-gap:.35em;padding:0 8mm;border-bottom:1.5px solid #bbb}
+  .ln:last-child{border-bottom:0}
+  .ln.l1{font-size:3.7rem}.ln.l2{font-size:3rem}.ln.l3{flex:.7;font-size:1.7rem;gap:2.2rem}
+  .ln.adr{font-size:2.1rem}
+  .mull{margin:2mm 8mm 8mm;padding:3mm 0;font-size:3.2rem;border-width:5px}
+}
+</style>
+</head>
+<body>
+<header><div>
+  <img class="hl" id="hlogo" alt="Allegion">
+  <hgroup><h1>ALLEGION SHIPPING LTL</h1>
+  <p>Enter the shipment details and generate one printable page per skid.</p></hgroup>
+</div></header>
+<main>
+  <section class="card" id="home">
+    <h2>Welcome</h2>
+    <p id="homemsg" style="margin:0;color:var(--muted)">Loading…</p>
+    <p class="share" id="homeshare" style="margin:6px 0 0"></p>
+    <div class="homebtns" id="homebtns" hidden>
+      <button type="button" class="primary big" id="cont" hidden><span>Continue previous SHIFT</span><small id="continfo"></small></button>
+      <button type="button" class="big" id="newshift"><span>Start a new SHIFT</span><small>Opens the form and creates a new, empty CSV sheet</small></button>
+    </div>
+    <div class="warn" style="margin:20px 0 0;text-align:center">⚠ Previous SHIFTs are kept for 2 days only. Download the CSV and Excel files before they are deleted.</div>
+    <div class="tools" id="prevdl" hidden style="justify-content:center;margin-top:12px">
+      <span style="color:var(--muted);font-size:.9rem;align-self:center">Previous SHIFT files:</span>
+      <button type="button" id="pdlc">Download CSV</button><button type="button" id="pdlx">Download Excel</button>
+    </div>
+  </section>
+
+  <div id="app" hidden>
+  <div class="shiftbar"><span id="shiftlabel"></span><button type="button" id="home2">Switch shift</button></div>
+  <div class="warn">⚠ Previous SHIFTs are kept for 2 days only. Download the CSV and Excel files before they are deleted.</div>
+  <form id="f" novalidate>
+    <div class="field">
+      <label for="order">Order <span class="hint">(digits only)</span></label>
+      <input id="order" name="order" type="text" inputmode="numeric" autocomplete="off" data-rule="digits">
+      <div class="err" aria-live="polite"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="carrier">Carrier</label>
+        <select id="carrier" name="carrier" data-rule="select">
+          <option value="">Select…</option>
+          <option>R&amp;L</option><option>Fedex Freight</option><option>UPS Freight</option><option>Autres</option>
+        </select>
+        <input id="carrierOther" type="text" placeholder="Type the carrier name" autocomplete="off" style="margin-top:8px" hidden>
+        <div class="err" aria-live="polite"></div>
+      </div>
+      <div class="field">
+        <label for="pro">Pro-Number <span class="hint">(letters &amp; digits)</span></label>
+        <input id="pro" name="proNumber" type="text" autocomplete="off" autocapitalize="characters" data-rule="alnum">
+        <div class="err" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="ltl">LTL Type</label>
+      <select id="ltl" name="ltlType" data-rule="select">
+        <option value="">Select…</option>
+        <option>Standart</option><option>Seclock</option><option>Olath</option><option>Autres</option>
+      </select>
+      <input id="ltlOther" type="text" placeholder="Type the LTL type" autocomplete="off" style="margin-top:8px" hidden>
+      <div class="err" aria-live="polite"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="skid">Skid <span class="hint">(digits, 1–200)</span></label>
+        <input id="skid" name="skid" type="text" inputmode="numeric" autocomplete="off" data-rule="digits">
+        <div class="err" aria-live="polite"></div>
+      </div>
+      <div class="field">
+        <label for="station">Station <span class="hint">(digits only)</span></label>
+        <input id="station" name="station" type="text" inputmode="numeric" autocomplete="off" data-rule="digits">
+        <div class="err" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="field" id="addrField" style="grid-column:1/-1" hidden>
+      <label for="address">Seclock address</label>
+      <input id="address" type="text" placeholder="Street, city, state, ZIP" autocomplete="off">
+      <div class="err" aria-live="polite"></div>
+    </div>
+    <div class="field">
+      <label>Mullions</label>
+      <label class="chk"><input type="checkbox" id="mull" name="mullions"><span>This order has mullions</span></label>
+      <div class="err"></div>
+    </div>
+    <input type="hidden" id="datetime" name="dateTime">
+    <div class="actions">
+      <button type="submit" class="primary">Generate</button>
+      <button type="reset">Clear</button>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+  </form>
+
+  <div class="card" id="ctnsbox" hidden>
+    <h2 style="margin:0 0 4px;font-size:1.1rem">Cartons per skid</h2>
+    <p class="note" style="margin:0 0 12px">Enter the number of cartons (Ctns) on each skid before printing.</p>
+    <div id="ctnsgrid"></div>
+    <div class="err" id="ctnserr" aria-live="polite"></div>
+    <div class="actions" style="margin-top:12px">
+      <button type="button" class="primary" id="ctnsok">Create labels</button>
+      <button type="button" id="ctnsback">Back</button>
+    </div>
+  </div>
+
+  <div class="bar" id="printbar" hidden>
+    <button type="button" class="primary" id="print" style="flex:none">Print</button>
+    <span id="count"></span>
+  </div>
+  <div id="sheets" aria-label="Pages to print"></div>
+
+  <section class="log" aria-labelledby="logt">
+    <div class="loghead">
+      <h2 id="logt">Shipment sheet</h2>
+      <div class="tools">
+        <button type="button" id="dl">Download CSV</button>
+        <label class="btn" for="imp">Import CSV</label>
+        <input type="file" id="imp" accept=".csv,text/csv" hidden>
+        <button type="button" id="dlx">Download Excel</button>
+      </div>
+    </div>
+    <p class="share" id="share"></p>
+    <div class="scroll">
+      <div class="empty" id="empty">No entries yet.</div>
+      <table id="tbl" hidden>
+        <thead><tr><th>Order</th><th>Carrier</th><th>Pro-Number</th><th>LTL Type</th><th>Skid</th><th>Ctns</th><th>Mullions</th><th>Station</th><th>Date &amp; time</th><th>Address</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">One single sheet for all stations: every Generate adds or updates a row (same Order + Pro-Number) in the shared sheet. Download CSV or Excel always gives the latest version. Use Edit on a row to update it.</p>
+  </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  var LOGO='data:image/png;base64,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';
+  var KEY='ltl_records', HEAD=['Order','Carrier','Pro-Number','LTL Type','Skid','Ctns','Mullions','Station','Date Time','Address'];
+  var form=document.getElementById('f'), dt=document.getElementById('datetime'), toast=document.getElementById('toast');
+  var tbody=document.querySelector('#tbl tbody'), recs=[];
+  function norm(r){ r=r.slice(); if(r.length>=10) return r.slice(0,10); if(r.length>=9){ r=r.slice(0,9); r.push(''); return r; } if(r.length===8){ r.splice(6,0,''); r.push(''); return r; } r=r.slice(0,7); r.splice(5,0,''); r.splice(6,0,''); r.push(''); return r; }
+  function persist(){ if(dbc||!shift) return; try{ localStorage.setItem('ltl_rec_'+shift.id,JSON.stringify(recs)); }catch(e){} }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function stamp(t){ var d=t?new Date(t):new Date(); return pad(d.getMonth()+1)+'/'+pad(d.getDate())+'/'+pad(d.getFullYear()%100)+' at '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+
+  var rules={
+    digits:{ok:/^\d+$/,msg:'Digits only.'},
+    alnum:{ok:/^[A-Za-z0-9]+$/,msg:'Letters and digits only.'},
+    select:{ok:/.+/,msg:'Please choose an option.'}
+  };
+  function setError(el,msg){ var b=el.closest('.field'); b.classList.toggle('invalid',!!msg); b.querySelector('.err').textContent=msg||''; }
+  function check(el){
+    var v=el.value.trim();
+    if(!v){ setError(el,el.tagName==='SELECT'?'Please choose an option.':'Required field.'); return false; }
+    if(!rules[el.dataset.rule].ok.test(v)){ setError(el,rules[el.dataset.rule].msg); return false; }
+    if(el.id==='carrier'&&v==='Autres'){
+      var ov=document.getElementById('carrierOther').value.trim();
+      if(!ov){ setError(el,'Type the carrier name.'); document.getElementById('carrierOther').focus(); return false; }
+      if(!/^[A-Za-z0-9 &.'-]+$/.test(ov)){ setError(el,'Letters, digits and & . - only.'); return false; }
+    }
+    if(el.id==='ltl'&&v==='Autres'){
+      var lv=document.getElementById('ltlOther').value.trim();
+      if(!lv){ setError(el,'Type the LTL type.'); document.getElementById('ltlOther').focus(); return false; }
+      if(!/^[A-Za-zÀ-ÿ -]+$/.test(lv)){ setError(el,'Letters only.'); return false; }
+    }
+    if(el.id==='ltl'&&v==='Seclock'){
+      var ad=document.getElementById('address'), av=ad.value.trim();
+      if(!av){ setError(ad,'Enter the Seclock address.'); ad.focus(); return false; }
+      if(!/^[A-Za-z0-9À-ÿ ,.#\/'-]+$/.test(av)){ setError(ad,'Letters, digits and , . # - / only.'); return false; }
+      setError(ad,'');
+    }
+    if(el.id==='skid'){ var n=parseInt(v,10); if(n<1){setError(el,'Minimum 1 skid.');return false;} if(n>200){setError(el,'Maximum 200 skids.');return false;} }
+    setError(el,''); return true;
+  }
+
+  /* ---- shared sheet (one CSV for all stations) ---- */
+  var EXP=48*3600*1000, dbc=null, shared=null, unsub=null, shift=null, lastShift=null;
+  function docId(r){ return (r[0]+'_'+r[2]).toUpperCase().replace(/[^A-Z0-9_]/g,''); }
+  function push(rec){
+    if(!shared) return;
+    shared.doc(docId(rec)).set({row:rec,ts:Date.now()}).catch(function(){ toast.textContent='Could not reach the shared sheet.'; });
+  }
+  function setStatus(on){
+    document.querySelectorAll('.share').forEach(function(el){
+      el.textContent=on?'● Shared sheet connected — all stations use the same data':'○ Local mode — this sheet is not shared with other stations';
+      el.className='share'+(on?' on':'');
+    });
+  }
+  function fileName(ext){
+    var t=shift?shift.label.split(' at ').join('_').split('/').join('-').split(':').join(''):'local';
+    return 'ltl-shipments_SHIFT_'+t+'.'+ext;
+  }
+  function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch(e){ return []; } }
+
+  function purgeExpired(){
+    var cut=Date.now()-EXP;
+    if(dbc){
+      dbc.collection('shifts').where('ts','<',cut).get().then(function(q){
+        q.docs.forEach(function(x){
+          if(shift&&shift.id===x.id) return;
+          var sub=dbc.collection('shifts').doc(x.id).collection('shipments');
+          sub.get().then(function(r){ return Promise.all(r.docs.map(function(y){ return sub.doc(y.id).delete(); })); })
+            .then(function(){ return dbc.collection('shifts').doc(x.id).delete(); }).catch(function(){});
+        });
+      }).catch(function(){});
+    } else {
+      var keep=[];
+      lsGet('ltl_shifts').forEach(function(sh){
+        if(sh.ts<cut && !(shift&&shift.id===sh.id)){ try{ localStorage.removeItem('ltl_rec_'+sh.id); }catch(e){} } else keep.push(sh);
+      });
+      try{ localStorage.setItem('ltl_shifts',JSON.stringify(keep)); }catch(e){}
+    }
+  }
+  function showHome(){
+    document.getElementById('app').hidden=true; document.getElementById('home').hidden=false;
+    document.getElementById('homebtns').hidden=true; document.getElementById('homemsg').textContent='Loading…';
+    setStatus(!!dbc); purgeExpired();
+    var done=function(last){
+      if(last&&last.ts&&Date.now()-last.ts>EXP) last=null;
+      lastShift=last;
+      var cont=document.getElementById('cont');
+      cont.hidden=!last; document.getElementById('prevdl').hidden=!last;
+      if(last) document.getElementById('continfo').textContent='Started '+last.label+' · kept until '+stamp(last.ts+EXP);
+      document.getElementById('homemsg').textContent=last?'Do you want to continue the previous SHIFT or start a new one?':'No previous SHIFT found. Start a new SHIFT to begin.';
+      document.getElementById('homebtns').hidden=false;
+    };
+    if(dbc){
+      dbc.collection('shifts').orderBy('ts','desc').limit(1).get().then(function(q){
+        var x=q.docs[0]; done(x?{id:x.id,label:(x.data()||{}).label,ts:(x.data()||{}).ts}:null);
+      }).catch(function(){ done(null); });
+    } else { var l=lsGet('ltl_shifts'); done(l.length?l[0]:null); }
+  }
+  function openShift(sh){
+    if(unsub){ unsub(); unsub=null; }
+    shift=sh; recs=[]; shared=null; renderTable();
+    if(dbc){
+      shared=dbc.collection('shifts').doc(sh.id).collection('shipments');
+      unsub=shared.orderBy('ts','desc').onSnapshot(function(snap){
+        recs=snap.docs.map(function(x){ return (x.data()||{}).row; }).filter(Boolean).map(norm);
+        renderTable();
+      },function(){ shared=null; setStatus(false); });
+    } else { recs=lsGet('ltl_rec_'+sh.id).map(norm); renderTable(); }
+    document.getElementById('shiftlabel').textContent='SHIFT started '+sh.label+(sh.ts?' · kept until '+stamp(sh.ts+EXP):'');
+    document.getElementById('home').hidden=true; document.getElementById('app').hidden=false;
+    window.scrollTo(0,0);
+  }
+  function newShift(){
+    var sh={id:String(Date.now()),label:stamp(),ts:Date.now()};
+    if(dbc){
+      dbc.collection('shifts').doc(sh.id).set({label:sh.label,ts:sh.ts}).then(function(){ openShift(sh); })
+        .catch(function(){ document.getElementById('homemsg').textContent='Could not create the SHIFT. Please try again.'; });
+    } else { var l=lsGet('ltl_shifts'); l.unshift(sh); try{ localStorage.setItem('ltl_shifts',JSON.stringify(l)); }catch(e){} openShift(sh); }
+  }
+  function goHome(){
+    if(unsub){ unsub(); unsub=null; }
+    shared=null; shift=null; recs=[]; form.reset();
+    document.getElementById('printbar').hidden=true; document.getElementById('sheets').innerHTML='';
+    showHome();
+  }
+  document.getElementById('cont').addEventListener('click',function(){ if(lastShift) openShift(lastShift); });
+  document.getElementById('newshift').addEventListener('click',newShift);
+  document.getElementById('home2').addEventListener('click',goHome);
+  function prevDownload(btn){
+    if(!lastShift) return;
+    var sh=lastShift;
+    var run=function(rs){ var sr=recs, ss=shift; recs=rs; shift=sh; document.getElementById(btn).click(); recs=sr; shift=ss; };
+    if(dbc){
+      dbc.collection('shifts').doc(sh.id).collection('shipments').orderBy('ts','desc').get().then(function(q){
+        run(q.docs.map(function(x){ return (x.data()||{}).row; }).filter(Boolean).map(norm));
+      });
+    } else run(lsGet('ltl_rec_'+sh.id).map(norm));
+  }
+  document.getElementById('pdlc').addEventListener('click',function(){ prevDownload('dl'); });
+  document.getElementById('pdlx').addEventListener('click',function(){ prevDownload('dlx'); });
+  function init(){
+    if(window.claude&&claude.use){
+      claude.use('db').then(function(d){ dbc=d||null; showHome(); }).catch(function(){ showHome(); });
+    } else showHome();
+  }
+
+  /* ---- sheet / table ---- */
+  function renderTable(){
+    tbody.innerHTML='';
+    recs.forEach(function(r){
+      var tr=document.createElement('tr');
+      r.forEach(function(v,i){ var td=document.createElement('td'); td.textContent=v; if(i===6&&v==='YES') td.className='yes'; tr.appendChild(td); });
+      var ta=document.createElement('td'), bt=document.createElement('button');
+      bt.type='button'; bt.className='edit'; bt.textContent='Edit'; bt.addEventListener('click',function(){ startEdit(r); });
+      ta.appendChild(bt); tr.appendChild(ta); tbody.appendChild(tr);
+    });
+    document.getElementById('tbl').hidden=!recs.length;
+    document.getElementById('empty').hidden=!!recs.length;
+  }
+  function upsert(rec){
+    var i=recs.findIndex(function(r){ return r[0]===rec[0] && String(r[2]).toUpperCase()===String(rec[2]).toUpperCase(); });
+    if(i>=0){ recs[i]=rec; return 'updated'; }
+    recs.unshift(rec); return 'added';
+  }
+  function toCSV(){
+    var q=function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; };
+    return '\ufeff'+[HEAD].concat(recs).map(function(r){ return r.map(q).join(','); }).join('\r\n')+'\r\n';
+  }
+  function parseCSV(t){
+    t=t.replace(/^\ufeff/,'');
+    var first=t.split(/\r?\n/)[0]||'', d=(first.split(';').length>first.split(',').length)?';':',';
+    var rows=[],row=[],cell='',q=false;
+    for(var i=0;i<t.length;i++){
+      var c=t[i];
+      if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+      else if(c==='"') q=true;
+      else if(c===d){ row.push(cell); cell=''; }
+      else if(c==='\n'||c==='\r'){ if(c==='\r'&&t[i+1]==='\n') i++; row.push(cell); rows.push(row); row=[]; cell=''; }
+      else cell+=c;
+    }
+    if(cell||row.length){ row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function saveFile(name,blob){
+    function fallback(){
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    }
+    if(window.claude&&claude.use){
+      claude.use('downloads').then(function(d){ return d?d.save({filename:name,data:blob}):fallback(); })
+        .catch(function(e){ if(!e||e.code!=='declined') fallback(); });
+    } else fallback();
+  }
+  document.getElementById('dl').addEventListener('click',function(){
+    saveFile(fileName('csv'),new Blob([toCSV()],{type:'text/csv;charset=utf-8'}));
+  });
+  document.getElementById('dlx').addEventListener('click',function(){
+    if(typeof ExcelJS==='undefined'){ toast.textContent='Excel export needs an internet connection (library not loaded).'; return; }
+    var nm=fileName('xlsx');
+    var wb=new ExcelJS.Workbook(), ws=wb.addWorksheet('Shipments');
+    ws.addRow(HEAD); ws.getRow(1).font={bold:true};
+    recs.forEach(function(r){
+      var row=ws.addRow(r);
+      if(r[6]==='YES'){ var c=row.getCell(7); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD0D0D0'}}; c.font={bold:true}; c.alignment={horizontal:'center'}; }
+    });
+    ws.columns.forEach(function(c){ c.width=18; });
+    wb.xlsx.writeBuffer().then(function(buf){
+      saveFile(nm,new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    });
+  });
+  document.getElementById('imp').addEventListener('change',function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      var rows=parseCSV(String(rd.result)).filter(function(r){ return r.length>=7 && r[0]!=='' && r[0]!=='Order'; }), n=0;
+      rows.slice().reverse().forEach(function(r){ var x=norm(r); upsert(x); push(x); n++; });
+      persist(); renderTable(); toast.textContent=n+' row(s) imported.'; e.target.value='';
+    };
+    rd.readAsText(f);
+  });
+
+  /* ---- labels ---- */
+  function pair(k,v){
+    var w=document.createElement('span'), a=document.createElement('span'), b=document.createElement('span');
+    a.className='k'; a.textContent=k+' : '; b.className='v'; b.textContent=v; w.appendChild(a); w.appendChild(b); return w;
+  }
+  function line(cls,k,v){
+    var p=document.createElement('p'); p.className='ln '+cls;
+    var a=document.createElement('span'); a.className='k'; a.textContent=k+' : ';
+    var b=document.createElement('span'); b.className='v'; b.textContent=v;
+    p.appendChild(a); p.appendChild(b); return p;
+  }
+  function renderLabels(d){
+    var total=parseInt(d.skid,10), box=document.getElementById('sheets'); box.innerHTML='';
+    for(var i=1;i<=total;i++){
+      var s=document.createElement('article'); s.className='sheet';
+      var h=document.createElement('div'); h.className='head';
+      h.innerHTML='<small>Skid</small><b></b>'; h.querySelector('b').textContent=i+' / '+total;
+      var b=document.createElement('div'); b.className='body';
+      b.appendChild(line('l1','Order','#'+d.order));
+      b.appendChild(line('l1','Carrier',d.carrier));
+      b.appendChild(line('l2','Pro-Number',d.proNumber));
+      b.appendChild(line('l2','LTL Type',d.ltlType));
+      if(d.address) b.appendChild(line('l3 adr','Address',d.address));
+      b.appendChild(line('l1','Ctns',d.ctns[i-1]));
+      var du=document.createElement('div'); du.className='ln l3 duo';
+      du.appendChild(pair('Station',d.station)); du.appendChild(pair('Date',d.dateTime)); b.appendChild(du);
+      if(d.mull){ var mb=document.createElement('div'); mb.className='mull'; mb.textContent='MULLIONS'; b.appendChild(mb); }
+      var lg=document.createElement('div'); lg.className='logo'; var im2=document.createElement('img'); im2.src=LOGO; im2.alt='Allegion'; lg.appendChild(im2);
+      s.appendChild(lg); s.appendChild(h); s.appendChild(b); box.appendChild(s);
+    }
+    document.getElementById('printbar').hidden=false;
+    document.getElementById('count').textContent=total+(total>1?' pages generated':' page generated')+' (one per skid).';
+  }
+  document.getElementById('print').addEventListener('click',function(){ window.print(); });
+
+  /* ---- form ---- */
+  dt.value=stamp(); renderTable(); document.getElementById('hlogo').src=LOGO; init();
+  form.querySelectorAll('[data-rule="digits"]').forEach(function(el){
+    el.addEventListener('input',function(){ var c=el.value.replace(/\D/g,''); if(c!==el.value){el.value=c;setError(el,'Digits only.');} else setError(el,''); });
+  });
+  document.getElementById('pro').addEventListener('input',function(e){
+    var el=e.target, c=el.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+    if(c!==el.value){ el.value=c; setError(el,'Letters and digits only.'); } else setError(el,'');
+  });
+  form.querySelectorAll('select').forEach(function(el){ el.addEventListener('change',function(){ if(el.id==='carrier') toggleOther(); if(el.id==='ltl') toggleLtl(); check(el); }); });
+  document.getElementById('carrierOther').addEventListener('input',function(){ setError(document.getElementById('carrier'),''); });
+  document.getElementById('ltlOther').addEventListener('input',function(){ setError(document.getElementById('ltl'),''); });
+  document.getElementById('address').addEventListener('input',function(){ setError(document.getElementById('address'),''); });
+
+  function openCtns(d){
+    var n=parseInt(d.skid,10), g=document.getElementById('ctnsgrid'); g.innerHTML='';
+    for(var i=1;i<=n;i++){
+      var w=document.createElement('div'); w.className='field';
+      var l=document.createElement('label'); l.textContent='Skid '+i+' / '+n; l.htmlFor='ct'+i;
+      var inp=document.createElement('input'); inp.id='ct'+i; inp.className='ct'; inp.type='text'; inp.inputMode='numeric'; inp.autocomplete='off';
+      inp.addEventListener('input',function(){ this.value=this.value.replace(/\D/g,''); this.closest('.field').classList.remove('invalid'); });
+      inp.addEventListener('keydown',function(ev){
+        if(ev.key!=='Enter') return; ev.preventDefault();
+        var nx=this.closest('.field').nextElementSibling;
+        if(nx) nx.querySelector('input').focus(); else document.getElementById('ctnsok').click();
+      });
+      if(editCtns&&editCtns[i-1]) inp.value=editCtns[i-1];
+      w.appendChild(l); w.appendChild(inp); g.appendChild(w);
+    }
+    document.getElementById('ctnserr').textContent='';
+    var box=document.getElementById('ctnsbox'); box.hidden=false;
+    document.getElementById('ct1').focus(); box.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function toggleOther(){
+    var on=document.getElementById('carrier').value==='Autres', o=document.getElementById('carrierOther');
+    o.hidden=!on; if(!on) o.value='';
+  }
+  function toggleLtl(){
+    var v=document.getElementById('ltl').value, o=document.getElementById('ltlOther'), af=document.getElementById('addrField');
+    o.hidden=(v!=='Autres'); if(v!=='Autres') o.value='';
+    af.hidden=(v!=='Seclock');
+    if(v!=='Seclock'){ document.getElementById('address').value=''; setError(document.getElementById('address'),''); }
+  }
+  function setLtl(v){
+    var sel=document.getElementById('ltl'), known=[].some.call(sel.options,function(o){ return o.value===v; });
+    if(known&&v!==''){ sel.value=v; document.getElementById('ltlOther').value=''; }
+    else { sel.value='Autres'; document.getElementById('ltlOther').value=v; }
+    toggleLtl();
+  }
+  function setCarrier(v){
+    var sel=document.getElementById('carrier'), known=[].some.call(sel.options,function(o){ return o.value===v; });
+    if(known&&v!==''){ sel.value=v; document.getElementById('carrierOther').value=''; }
+    else { sel.value='Autres'; document.getElementById('carrierOther').value=v; }
+    toggleOther();
+  }
+  var pending=null, editKey=null, editCtns=null;
+  function startEdit(r){
+    var set=function(id,v){ document.getElementById(id).value=v; };
+    set('order',r[0]); setCarrier(r[1]); set('pro',r[2]); setLtl(r[3]); set('address',r[9]||''); set('skid',r[4]); set('station',r[7]);
+    document.getElementById('mull').checked=(r[6]==='YES');
+    editKey=docId(r); editCtns=String(r[5]||'').split(' | ');
+    form.querySelectorAll('.field').forEach(function(b){ b.classList.remove('invalid'); b.querySelector('.err').textContent=''; });
+    document.getElementById('ctnsbox').hidden=true;
+    toast.textContent='Editing Order #'+r[0]+' — change what you need, then click Generate to update the sheet.';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  document.getElementById('ctnsback').addEventListener('click',function(){ document.getElementById('ctnsbox').hidden=true; });
+  document.getElementById('ctnsok').addEventListener('click',function(){
+    var vals=[], bad=null;
+    document.querySelectorAll('#ctnsgrid .ct').forEach(function(el){
+      var v=el.value.trim(), ok=/^\d+$/.test(v)&&parseInt(v,10)>=1;
+      el.closest('.field').classList.toggle('invalid',!ok); if(!ok&&!bad) bad=el; vals.push(v);
+    });
+    if(bad){ document.getElementById('ctnserr').textContent='Enter the number of cartons (1 or more) for every skid.'; bad.focus(); return; }
+    var d=pending; d.dateTime=stamp(); d.ctns=vals;
+    var rec=[d.order,d.carrier,d.proNumber,d.ltlType,d.skid,vals.join(' | '),d.mull?'YES':'',d.station,d.dateTime,d.address||''];
+    if(editKey&&editKey!==docId(rec)){
+      recs=recs.filter(function(r){ return docId(r)!==editKey; });
+      if(shared) shared.doc(editKey).delete().catch(function(){});
+    }
+    var res=upsert(rec); push(rec); editKey=null; editCtns=null;
+    persist(); renderTable(); renderLabels(d);
+    document.getElementById('ctnsbox').hidden=true;
+    toast.textContent='Generated '+d.dateTime+' — sheet row '+res+'.';
+    document.getElementById('printbar').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); toast.textContent='';
+    var ok=true; form.querySelectorAll('[data-rule]').forEach(function(el){ if(!check(el)) ok=false; });
+    if(!ok){ var f=form.querySelector('.invalid input,.invalid select'); if(f) f.focus(); return; }
+    dt.value=stamp();
+    var d={}; new FormData(form).forEach(function(v,k){ d[k]=v.trim(); });
+    d.mull=document.getElementById('mull').checked;
+    if(d.carrier==='Autres') d.carrier=document.getElementById('carrierOther').value.trim();
+    if(d.ltlType==='Autres') d.ltlType=document.getElementById('ltlOther').value.trim();
+    d.address=(d.ltlType==='Seclock')?document.getElementById('address').value.trim():'';
+    document.getElementById('printbar').hidden=true; document.getElementById('sheets').innerHTML='';
+    pending=d; openCtns(d);
+  });
+  form.addEventListener('reset',function(){
+    form.querySelectorAll('.field').forEach(function(b){ b.classList.remove('invalid'); b.querySelector('.err').textContent=''; });
+    toast.textContent=''; editKey=null; editCtns=null; document.getElementById('ctnsbox').hidden=true; setTimeout(function(){ dt.value=stamp(); toggleOther(); toggleLtl(); },0);
+  });
+})();
+</script>
+</body>
+</html>
